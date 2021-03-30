@@ -1,16 +1,38 @@
-# This is a sample Python script.
+import pandas as pd
+import numpy as np
+import random as rd
+dataset=pd.read_csv('input_form.csv',delimiter=";", header = None)
 
-# Press Umschalt+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+X = dataset.iloc[:, [0, 1]].values
+m=X.shape[0] #number of training examples
+n=X.shape[1] #number of features. Here n=2
+n_iter=5
+K=3 # number of clusters
+Centroids=np.array([]).reshape(n,0)
+for i in range(K):
+    rand=rd.randint(0,m-1)
+    Centroids=np.c_[Centroids,X[rand]]
+    print("Centroids:")
+    print(Centroids)
 
+for i in range(n_iter):
+    # step 2.a
+    EuclidianDistance = np.array([]).reshape(m, 0)
+    for k in range(K):
+        tempDist = np.sum((X - Centroids[:, k]) ** 2, axis=1)
+        EuclidianDistance = np.c_[EuclidianDistance, tempDist]
+    C = np.argmin(EuclidianDistance, axis=1) + 1
+    print(EuclidianDistance)
+    # step 2.b
+    Y = {}
+    for k in range(K):
+        Y[k + 1] = np.array([]).reshape(2, 0)
+    for i in range(m):
+        Y[C[i]] = np.c_[Y[C[i]], X[i]]
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Strg+F8 to toggle the breakpoint.
+    for k in range(K):
+        Y[k + 1] = Y[k + 1].T
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    for k in range(K):
+        Centroids[:, k] = np.mean(Y[k + 1], axis=0)
+    Output = Y
